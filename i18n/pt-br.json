@@ -1,0 +1,45 @@
+{
+  "app_title": "CCAAK Certification Quiz",
+  "app_subtitle": "Simulador de Prova — Confluent Certified Administrator for Apache Kafka",
+
+  "label_language": "Idioma",
+  "label_mode": "Modo",
+  "label_qty": "Número de questões",
+
+  "mode_exam": "Modo Simulado",
+  "mode_exam_desc": "Sem feedback durante o quiz. Descubra seus acertos apenas ao final.",
+  "mode_training": "Modo Treinamento",
+  "mode_training_desc": "Feedback imediato após cada resposta com explicação técnica.",
+
+  "btn_start": "Iniciar Quiz",
+  "btn_confirm": "Confirmar",
+  "btn_next": "Próxima",
+  "btn_review": "Revisar Respostas",
+  "btn_restart": "Novo Quiz",
+  "btn_home": "Voltar ao Início",
+  "btn_exit": "Sair",
+  "confirm_exit": "Deseja mesmo sair? O progresso do quiz atual será perdido.",
+
+  "label_question": "Questão",
+  "label_of": "de",
+  "label_time_left": "Tempo restante",
+  "label_time_up": "Tempo esgotado!",
+
+  "label_score": "Sua Pontuação",
+  "label_approved": "APROVADO",
+  "label_failed": "REPROVADO",
+  "label_category_breakdown": "Desempenho por Categoria",
+  "label_category": "Categoria",
+  "label_result": "Resultado",
+
+  "label_correct_answer": "Resposta Correta",
+  "label_your_answer": "Sua Resposta",
+  "label_explanation": "Explicação",
+
+  "feedback_correct": "Correto!",
+  "feedback_incorrect": "Incorreto!",
+
+  "difficulty_easy": "Fácil",
+  "difficulty_medium": "Médio",
+  "difficulty_hard": "Difícil"
+}

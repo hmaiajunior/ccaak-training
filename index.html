@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCAAK Certification Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ SETUP ══ -->
+  <section id="screen-setup" class="screen active">
+    <div class="container">
+      <h1 id="setup-title" class="app-title"></h1>
+      <p id="setup-subtitle" class="app-subtitle"></p>
+
+      <!-- Language -->
+      <div class="field-group">
+        <span class="field-label" data-i18n="label_language"></span>
+        <div id="lang-toggle" class="btn-group">
+          <button class="btn-option" data-lang="pt">PT-BR</button>
+          <button class="btn-option" data-lang="en">EN</button>
+        </div>
+      </div>
+
+      <!-- Mode -->
+      <div class="field-group">
+        <span class="field-label" data-i18n="label_mode"></span>
+        <div id="mode-cards" class="cards-row">
+          <button class="mode-card" data-mode="exam">
+            <strong data-i18n="mode_exam"></strong>
+            <span data-i18n="mode_exam_desc"></span>
+          </button>
+          <button class="mode-card" data-mode="training">
+            <strong data-i18n="mode_training"></strong>
+            <span data-i18n="mode_training_desc"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="field-group">
+        <span class="field-label" data-i18n="label_qty"></span>
+        <div id="qty-buttons" class="btn-group">
+          <button class="btn-option" data-qty="10">10</button>
+          <button class="btn-option" data-qty="20">20</button>
+          <button class="btn-option" data-qty="30">30</button>
+          <button class="btn-option" data-qty="40">40</button>
+          <button class="btn-option" data-qty="50">50</button>
+        </div>
+      </div>
+
+      <button id="btn-start" class="btn-primary" disabled data-i18n="btn_start"></button>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════ QUIZ ══ -->
+  <section id="screen-quiz" class="screen">
+    <div class="container">
+      <header class="quiz-header">
+        <span id="mode-badge" class="mode-badge"></span>
+        <span id="progress" class="progress-text"></span>
+        <span id="timer" class="timer hidden"></span>
+        <button id="btn-exit" class="btn-exit" data-i18n="btn_exit"></button>
+      </header>
+
+      <div id="question-text" class="question-text"></div>
+
+      <div id="options-container" class="options-container"></div>
+
+      <div id="feedback-box" class="feedback-box hidden">
+        <p id="feedback-status" class="feedback-status"></p>
+        <p id="feedback-explanation" class="feedback-explanation"></p>
+      </div>
+
+      <button id="btn-confirm" class="btn-primary" disabled data-i18n="btn_confirm"></button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ RESULTS ══ -->
+  <section id="screen-results" class="screen">
+    <div class="container">
+      <h2 data-i18n="label_score"></h2>
+      <div id="results-score" class="results-score"></div>
+      <div id="results-status" class="results-status"></div>
+
+      <h3 data-i18n="label_category_breakdown"></h3>
+      <table id="results-breakdown" class="breakdown-table">
+        <thead>
+          <tr>
+            <th data-i18n="label_category"></th>
+            <th data-i18n="label_result"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="results-actions">
+        <button id="btn-review" class="btn-secondary" data-i18n="btn_review"></button>
+        <button id="btn-restart-results" class="btn-secondary" data-i18n="btn_restart"></button>
+        <button id="btn-home-results" class="btn-primary" data-i18n="btn_home"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ REVIEW ══ -->
+  <section id="screen-review" class="screen">
+    <div class="container">
+      <div id="review-list" class="review-list"></div>
+      <div class="results-actions">
+        <button id="btn-restart-review" class="btn-secondary" data-i18n="btn_restart"></button>
+        <button id="btn-home-review" class="btn-primary" data-i18n="btn_home"></button>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

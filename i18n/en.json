@@ -1,0 +1,45 @@
+{
+  "app_title": "CCAAK Certification Quiz",
+  "app_subtitle": "Practice Exam — Confluent Certified Administrator for Apache Kafka",
+
+  "label_language": "Language",
+  "label_mode": "Mode",
+  "label_qty": "Number of questions",
+
+  "mode_exam": "Exam Mode",
+  "mode_exam_desc": "No feedback during the quiz. Discover your results only at the end.",
+  "mode_training": "Training Mode",
+  "mode_training_desc": "Immediate feedback after each answer with a technical explanation.",
+
+  "btn_start": "Start Quiz",
+  "btn_confirm": "Confirm",
+  "btn_next": "Next",
+  "btn_review": "Review Answers",
+  "btn_restart": "New Quiz",
+  "btn_home": "Back to Home",
+  "btn_exit": "Exit",
+  "confirm_exit": "Are you sure you want to exit? Your current quiz progress will be lost.",
+
+  "label_question": "Question",
+  "label_of": "of",
+  "label_time_left": "Time remaining",
+  "label_time_up": "Time is up!",
+
+  "label_score": "Your Score",
+  "label_approved": "PASSED",
+  "label_failed": "FAILED",
+  "label_category_breakdown": "Performance by Category",
+  "label_category": "Category",
+  "label_result": "Result",
+
+  "label_correct_answer": "Correct Answer",
+  "label_your_answer": "Your Answer",
+  "label_explanation": "Explanation",
+
+  "feedback_correct": "Correct!",
+  "feedback_incorrect": "Incorrect!",
+
+  "difficulty_easy": "Easy",
+  "difficulty_medium": "Medium",
+  "difficulty_hard": "Hard"
+}

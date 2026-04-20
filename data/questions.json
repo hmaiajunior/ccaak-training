@@ -1,0 +1,1302 @@
+[
+  {
+    "id": "q001",
+    "category": "Kafka Core Concepts",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "O que é o ISR (In-Sync Replicas) em uma partição do Kafka?",
+      "options": {
+        "A": "O conjunto de todos os brokers do cluster que possuem uma cópia do tópico",
+        "B": "A réplica líder responsável por receber e distribuir mensagens",
+        "C": "O conjunto de réplicas que estão completamente sincronizadas com o líder e elegíveis para se tornarem líderes em caso de falha",
+        "D": "O número mínimo de réplicas necessárias para que uma escrita seja confirmada"
+      },
+      "explanation": "O ISR (In-Sync Replicas) é o conjunto de réplicas que estão completamente atualizadas com o líder da partição. Somente réplicas no ISR podem ser eleitas como novo líder em caso de falha. Uma réplica é removida do ISR se não buscar atualizações do líder dentro do intervalo definido por `replica.lag.time.max.ms`."
+    },
+    "en": {
+      "question": "What is the ISR (In-Sync Replicas) in a Kafka partition?",
+      "options": {
+        "A": "The set of all cluster brokers that hold a copy of the topic",
+        "B": "The leader replica responsible for receiving and distributing messages",
+        "C": "The set of replicas that are fully synchronized with the leader and eligible to become leaders upon failure",
+        "D": "The minimum number of replicas required for a write to be acknowledged"
+      },
+      "explanation": "The ISR (In-Sync Replicas) is the set of replicas that are fully caught up with the partition leader. Only replicas in the ISR can be elected as the new leader upon failure. A replica is removed from the ISR if it fails to fetch updates from the leader within the interval defined by `replica.lag.time.max.ms`."
+    }
+  },
+  {
+    "id": "q002",
+    "category": "Kafka Core Concepts",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é a principal vantagem do modo KRaft em relação ao uso do ZooKeeper no Apache Kafka?",
+      "options": {
+        "A": "KRaft aumenta o número máximo de partições por tópico de 1.000 para 10.000",
+        "B": "KRaft elimina a dependência do ZooKeeper, permitindo que o Kafka gerencie seus próprios metadados internamente e simplifique a operação do cluster",
+        "C": "KRaft substitui o protocolo de replicação entre brokers por um protocolo mais eficiente baseado em UDP",
+        "D": "KRaft adiciona suporte nativo a transações distribuídas entre múltiplos clusters"
+      },
+      "explanation": "O modo KRaft (Kafka Raft) foi introduzido para eliminar a dependência do Apache ZooKeeper. Com KRaft, o próprio Kafka gerencia seus metadados utilizando o algoritmo de consenso Raft. Isso simplifica a operação (menos componentes), reduz a latência de operações de metadados e aumenta a escalabilidade do cluster."
+    },
+    "en": {
+      "question": "What is the main advantage of KRaft mode over using ZooKeeper in Apache Kafka?",
+      "options": {
+        "A": "KRaft increases the maximum number of partitions per topic from 1,000 to 10,000",
+        "B": "KRaft eliminates the ZooKeeper dependency, allowing Kafka to manage its own metadata internally and simplifying cluster operations",
+        "C": "KRaft replaces the inter-broker replication protocol with a more efficient UDP-based protocol",
+        "D": "KRaft adds native support for distributed transactions across multiple clusters"
+      },
+      "explanation": "KRaft mode (Kafka Raft) was introduced to eliminate the Apache ZooKeeper dependency. With KRaft, Kafka itself manages its metadata using the Raft consensus algorithm. This simplifies operations (fewer components), reduces metadata operation latency, and improves cluster scalability."
+    }
+  },
+  {
+    "id": "q003",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "hard",
+    "correct": "D",
+    "pt": {
+      "question": "Um tópico tem `replication.factor=3` e `min.insync.replicas=2`. O que acontece se dois dos três brokers ficarem offline enquanto um producer envia mensagens com `acks=all`?",
+      "options": {
+        "A": "O producer continua enviando normalmente, pois ainda há um broker disponível",
+        "B": "O producer envia mensagens sem confirmação e elas podem ser perdidas",
+        "C": "O Kafka elege automaticamente uma nova réplica para manter o ISR com 2 membros",
+        "D": "O producer recebe `NotEnoughReplicasException`, pois o ISR ficou abaixo do mínimo exigido"
+      },
+      "explanation": "Com `acks=all` e `min.insync.replicas=2`, o broker líder exige que ao menos 2 réplicas (incluindo ele mesmo) estejam no ISR antes de confirmar a escrita. Se dois brokers ficam offline, o ISR cai para 1, que é menor que o mínimo exigido. O broker retorna `NotEnoughReplicasException`, protegendo contra perda de dados."
+    },
+    "en": {
+      "question": "A topic has `replication.factor=3` and `min.insync.replicas=2`. What happens if two of the three brokers go offline while a producer sends messages with `acks=all`?",
+      "options": {
+        "A": "The producer continues sending normally since one broker is still available",
+        "B": "The producer sends messages without acknowledgment and they may be lost",
+        "C": "Kafka automatically elects a new replica to keep the ISR at 2 members",
+        "D": "The producer receives `NotEnoughReplicasException` because the ISR fell below the required minimum"
+      },
+      "explanation": "With `acks=all` and `min.insync.replicas=2`, the leader broker requires at least 2 replicas (including itself) in the ISR before acknowledging a write. If two brokers go offline, the ISR drops to 1, which is below the required minimum. The broker returns `NotEnoughReplicasException`, protecting against data loss."
+    }
+  },
+  {
+    "id": "q004",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "O que o Log Compaction garante em um tópico Kafka configurado com `cleanup.policy=compact`?",
+      "options": {
+        "A": "Para cada chave de mensagem, ao menos o valor mais recente é retido indefinidamente, independente do tempo de retenção",
+        "B": "Todas as mensagens duplicadas são removidas, mantendo apenas uma cópia de cada mensagem",
+        "C": "O log é comprimido com algoritmo gzip para reduzir o espaço em disco",
+        "D": "Mensagens com mais de 7 dias são automaticamente deletadas para liberar espaço"
+      },
+      "explanation": "O Log Compaction garante que, para cada chave única, o Kafka retém ao menos o registro mais recente. Isso permite usar tópicos como um changelog ou state store — consumers podem reconstruir o estado mais recente lendo o tópico compactado. Mensagens com chave `null` não são compactadas. Mensagens com valor `null` (tombstones) indicam deleção da chave."
+    },
+    "en": {
+      "question": "What does Log Compaction guarantee in a Kafka topic configured with `cleanup.policy=compact`?",
+      "options": {
+        "A": "For each message key, at least the most recent value is retained indefinitely, regardless of retention time",
+        "B": "All duplicate messages are removed, keeping only one copy of each message",
+        "C": "The log is compressed with gzip to reduce disk space",
+        "D": "Messages older than 7 days are automatically deleted to free up space"
+      },
+      "explanation": "Log Compaction guarantees that for each unique key, Kafka retains at least the most recent record. This allows using topics as a changelog or state store — consumers can reconstruct the latest state by reading the compacted topic. Messages with a `null` key are not compacted. Messages with a `null` value (tombstones) signal key deletion."
+    }
+  },
+  {
+    "id": "q005",
+    "category": "Producers",
+    "difficulty": "easy",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é o comportamento do producer Kafka quando configurado com `acks=0`?",
+      "options": {
+        "A": "O producer aguarda confirmação apenas do broker líder antes de continuar",
+        "B": "O producer não aguarda nenhuma confirmação do broker e continua enviando imediatamente, aceitando possível perda de mensagens",
+        "C": "O producer aguarda confirmação de todas as réplicas no ISR antes de continuar",
+        "D": "O producer envia mensagens em modo transacional, garantindo entrega exatamente uma vez"
+      },
+      "explanation": "Com `acks=0`, o producer dispara a mensagem e não aguarda nenhuma confirmação (acknowledgment) do broker. Isso maximiza o throughput e minimiza a latência, mas significa que mensagens podem ser perdidas silenciosamente se o broker falhar antes de gravar. É aceitável apenas em cenários onde perda de dados é tolerável, como métricas ou logs não críticos."
+    },
+    "en": {
+      "question": "What is the behavior of a Kafka producer configured with `acks=0`?",
+      "options": {
+        "A": "The producer waits for acknowledgment from the leader broker only before continuing",
+        "B": "The producer does not wait for any acknowledgment from the broker and continues sending immediately, accepting possible message loss",
+        "C": "The producer waits for acknowledgment from all ISR replicas before continuing",
+        "D": "The producer sends messages in transactional mode, guaranteeing exactly-once delivery"
+      },
+      "explanation": "With `acks=0`, the producer fires the message and does not wait for any acknowledgment from the broker. This maximizes throughput and minimizes latency, but means messages can be silently lost if the broker fails before writing. It is acceptable only in scenarios where data loss is tolerable, such as non-critical metrics or logs."
+    }
+  },
+  {
+    "id": "q006",
+    "category": "Producers",
+    "difficulty": "hard",
+    "correct": "C",
+    "pt": {
+      "question": "Ao habilitar `enable.idempotence=true` no producer Kafka, quais configurações são automaticamente aplicadas?",
+      "options": {
+        "A": "`acks=1`, `retries=0` e `max.in.flight.requests.per.connection=5`",
+        "B": "`acks=0`, `retries=Integer.MAX_VALUE` e `max.in.flight.requests.per.connection=1`",
+        "C": "`acks=all`, `retries=Integer.MAX_VALUE` e `max.in.flight.requests.per.connection=5`",
+        "D": "`acks=all`, `retries=3` e `max.in.flight.requests.per.connection=1`"
+      },
+      "explanation": "Um producer idempotente garante que cada mensagem seja escrita exatamente uma vez, mesmo em caso de reenvios por falhas de rede. O Kafka configura automaticamente `acks=all` (máxima durabilidade), `retries=Integer.MAX_VALUE` (retentativas ilimitadas) e `max.in.flight.requests.per.connection=5` (suportado com deduplicação via sequence numbers e Producer ID). Tentativas de configurar valores incompatíveis resultam em erro de configuração."
+    },
+    "en": {
+      "question": "When enabling `enable.idempotence=true` on a Kafka producer, which configurations are automatically applied?",
+      "options": {
+        "A": "`acks=1`, `retries=0`, and `max.in.flight.requests.per.connection=5`",
+        "B": "`acks=0`, `retries=Integer.MAX_VALUE`, and `max.in.flight.requests.per.connection=1`",
+        "C": "`acks=all`, `retries=Integer.MAX_VALUE`, and `max.in.flight.requests.per.connection=5`",
+        "D": "`acks=all`, `retries=3`, and `max.in.flight.requests.per.connection=1`"
+      },
+      "explanation": "An idempotent producer guarantees that each message is written exactly once, even when retrying after network failures. Kafka automatically sets `acks=all` (maximum durability), `retries=Integer.MAX_VALUE` (unlimited retries), and `max.in.flight.requests.per.connection=5` (supported with deduplication via sequence numbers and Producer ID). Attempting to configure incompatible values results in a configuration error."
+    }
+  },
+  {
+    "id": "q007",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "easy",
+    "correct": "A",
+    "pt": {
+      "question": "Um novo consumer group sem offsets commitados começa a consumir um tópico com `auto.offset.reset=earliest`. Qual é o comportamento esperado?",
+      "options": {
+        "A": "O consumer lê todas as mensagens disponíveis no tópico desde o início, incluindo as mais antigas ainda retidas",
+        "B": "O consumer lê apenas as mensagens produzidas após o momento em que ele iniciou",
+        "C": "O consumer lança uma exceção indicando que não há offset inicial definido",
+        "D": "O consumer lê apenas as mensagens das últimas 24 horas"
+      },
+      "explanation": "Com `auto.offset.reset=earliest`, quando um consumer group não possui offsets commitados (grupo novo ou offset expirado), o Kafka posiciona o consumer no offset mais antigo disponível na partição. Isso permite que o consumer processe todo o histórico de mensagens ainda retido. A alternativa `latest` posicionaria no fim da fila, processando apenas mensagens novas."
+    },
+    "en": {
+      "question": "A new consumer group with no committed offsets starts consuming a topic with `auto.offset.reset=earliest`. What is the expected behavior?",
+      "options": {
+        "A": "The consumer reads all available messages in the topic from the beginning, including the oldest ones still retained",
+        "B": "The consumer reads only messages produced after the moment it started",
+        "C": "The consumer throws an exception indicating no initial offset is defined",
+        "D": "The consumer reads only messages from the last 24 hours"
+      },
+      "explanation": "With `auto.offset.reset=earliest`, when a consumer group has no committed offsets (new group or expired offset), Kafka positions the consumer at the oldest available offset in the partition. This allows the consumer to process the full message history still retained. The `latest` alternative would position at the end of the queue, processing only new messages."
+    }
+  },
+  {
+    "id": "q008",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que dispara um rebalanceamento (rebalance) em um consumer group Kafka?",
+      "options": {
+        "A": "Um producer enviar mensagens para uma partição que não está sendo consumida",
+        "B": "O broker líder de uma partição ser substituído por outra réplica",
+        "C": "O tópico atingir o limite de retenção de mensagens configurado",
+        "D": "Um consumer entrar ou sair do grupo, ou uma partição ser adicionada ao tópico"
+      },
+      "explanation": "Um rebalanceamento é acionado sempre que a composição do consumer group muda: quando um novo consumer entra, quando um consumer sai (falha, timeout de `session.timeout.ms` ou desligamento), ou quando partições são adicionadas/removidas do tópico. Durante o rebalance, todos os consumers param de processar mensagens até que as partições sejam redistribuídas — esse é o chamado 'stop-the-world rebalance'. O Kafka 2.4+ introduziu o rebalanceamento cooperativo para minimizar esse impacto."
+    },
+    "en": {
+      "question": "What triggers a rebalance in a Kafka consumer group?",
+      "options": {
+        "A": "A producer sending messages to a partition that is not being consumed",
+        "B": "The leader broker of a partition being replaced by another replica",
+        "C": "The topic reaching its configured message retention limit",
+        "D": "A consumer joining or leaving the group, or a partition being added to the topic"
+      },
+      "explanation": "A rebalance is triggered whenever the consumer group membership changes: when a new consumer joins, when a consumer leaves (failure, `session.timeout.ms` timeout, or shutdown), or when partitions are added or removed from the topic. During a rebalance, all consumers stop processing messages until partitions are redistributed — this is the so-called 'stop-the-world rebalance'. Kafka 2.4+ introduced cooperative rebalancing to minimize this impact."
+    }
+  },
+  {
+    "id": "q009",
+    "category": "Kafka Connect",
+    "difficulty": "easy",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é a diferença entre um Source Connector e um Sink Connector no Kafka Connect?",
+      "options": {
+        "A": "Source Connectors consomem dados de tópicos Kafka e os enviam para sistemas externos; Sink Connectors fazem o inverso",
+        "B": "Source Connectors leem dados de sistemas externos e os publicam em tópicos Kafka; Sink Connectors consomem tópicos Kafka e gravam os dados em sistemas externos",
+        "C": "Source Connectors e Sink Connectors fazem a mesma coisa, diferenciando-se apenas pelo protocolo de transporte utilizado",
+        "D": "Source Connectors processam mensagens dentro do Kafka usando transformações; Sink Connectors apenas filtram mensagens"
+      },
+      "explanation": "No Kafka Connect, a direção do fluxo de dados determina o tipo do conector. Um Source Connector lê dados de uma fonte externa (banco de dados, sistema de arquivos, API) e os publica em tópicos Kafka. Um Sink Connector consome mensagens de tópicos Kafka e as grava em um destino externo (banco de dados, Elasticsearch, S3, etc.). O Kafka Connect gerencia offset, paralelismo e tolerância a falhas automaticamente."
+    },
+    "en": {
+      "question": "What is the difference between a Source Connector and a Sink Connector in Kafka Connect?",
+      "options": {
+        "A": "Source Connectors consume data from Kafka topics and send it to external systems; Sink Connectors do the reverse",
+        "B": "Source Connectors read data from external systems and publish it to Kafka topics; Sink Connectors consume Kafka topics and write data to external systems",
+        "C": "Source Connectors and Sink Connectors do the same thing, differing only in the transport protocol used",
+        "D": "Source Connectors process messages inside Kafka using transformations; Sink Connectors only filter messages"
+      },
+      "explanation": "In Kafka Connect, the direction of data flow determines the connector type. A Source Connector reads data from an external source (database, file system, API) and publishes it to Kafka topics. A Sink Connector consumes messages from Kafka topics and writes them to an external destination (database, Elasticsearch, S3, etc.). Kafka Connect automatically manages offsets, parallelism, and fault tolerance."
+    }
+  },
+  {
+    "id": "q010",
+    "category": "Security",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "Qual mecanismo SASL é recomendado para autenticação com usuário e senha em ambientes Kafka sem infraestrutura Kerberos?",
+      "options": {
+        "A": "SASL/GSSAPI, pois é o mecanismo padrão suportado em todas as versões do Kafka",
+        "B": "SASL/PLAIN, pois transmite as credenciais de forma segura sem necessidade de configuração adicional",
+        "C": "SASL/SCRAM-SHA-256 ou SASL/SCRAM-SHA-512, pois armazenam credenciais com hash no ZooKeeper/KRaft e não transmitem senhas em texto claro",
+        "D": "SASL/OAUTHBEARER, pois é o único mecanismo compatível com autenticação de usuário e senha"
+      },
+      "explanation": "SASL/SCRAM (Salted Challenge Response Authentication Mechanism) é o mecanismo recomendado quando não há Kerberos disponível. Diferente do SASL/PLAIN (que transmite senhas em texto claro e deve ser usado apenas com TLS), o SCRAM armazena as credenciais com hash seguro (SHA-256 ou SHA-512) no ZooKeeper/KRaft e usa um protocolo de desafio-resposta, nunca transmitindo a senha diretamente. O SASL/GSSAPI requer Kerberos; o OAUTHBEARER é para tokens OAuth2."
+    },
+    "en": {
+      "question": "Which SASL mechanism is recommended for username/password authentication in Kafka environments without Kerberos infrastructure?",
+      "options": {
+        "A": "SASL/GSSAPI, as it is the default mechanism supported in all Kafka versions",
+        "B": "SASL/PLAIN, as it transmits credentials securely without additional configuration",
+        "C": "SASL/SCRAM-SHA-256 or SASL/SCRAM-SHA-512, as they store credentials hashed in ZooKeeper/KRaft and do not transmit passwords in clear text",
+        "D": "SASL/OAUTHBEARER, as it is the only mechanism compatible with username/password authentication"
+      },
+      "explanation": "SASL/SCRAM (Salted Challenge Response Authentication Mechanism) is the recommended mechanism when Kerberos is not available. Unlike SASL/PLAIN (which transmits passwords in clear text and should only be used with TLS), SCRAM stores credentials with a secure hash (SHA-256 or SHA-512) in ZooKeeper/KRaft and uses a challenge-response protocol, never transmitting the password directly. SASL/GSSAPI requires Kerberos; OAUTHBEARER is for OAuth2 tokens."
+    }
+  },
+  {
+    "id": "q011",
+    "category": "Kafka Core Concepts",
+    "difficulty": "hard",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é o papel do Controller no Apache Kafka?",
+      "options": {
+        "A": "Rotear mensagens dos producers para as partições corretas com base na chave",
+        "B": "Gerenciar eleições de líderes de partição e propagar mudanças de metadados para os demais brokers",
+        "C": "Balancear a carga de consumers entre as partições de um tópico",
+        "D": "Persistir os offsets commitados pelos consumer groups"
+      },
+      "explanation": "O Controller é um broker especial eleito dentro do cluster Kafka. Ele é responsável por monitorar o estado dos brokers via ZooKeeper (ou via Raft no KRaft), conduzir eleições de líderes de partição quando um broker falha e propagar as mudanças de metadados (como novos líderes) para todos os outros brokers do cluster."
+    },
+    "en": {
+      "question": "What is the role of the Controller in Apache Kafka?",
+      "options": {
+        "A": "Route messages from producers to the correct partitions based on the key",
+        "B": "Manage partition leader elections and propagate metadata changes to other brokers",
+        "C": "Balance consumer load across the partitions of a topic",
+        "D": "Persist committed offsets for consumer groups"
+      },
+      "explanation": "The Controller is a special broker elected within the Kafka cluster. It is responsible for monitoring broker state via ZooKeeper (or Raft in KRaft mode), conducting partition leader elections when a broker fails, and propagating metadata changes (such as new leaders) to all other brokers in the cluster."
+    }
+  },
+  {
+    "id": "q012",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que acontece quando `min.insync.replicas=2` e `acks=all`, mas apenas 1 réplica está no ISR no momento da escrita?",
+      "options": {
+        "A": "A mensagem é gravada apenas na réplica disponível e confirmada ao producer",
+        "B": "O broker líder aguarda indefinidamente até que outra réplica entre no ISR",
+        "C": "A mensagem é descartada silenciosamente",
+        "D": "O broker retorna `NotEnoughReplicasException` ao producer"
+      },
+      "explanation": "Quando `acks=all` e o número de réplicas no ISR é menor que `min.insync.replicas`, o broker líder rejeita a escrita e retorna `NotEnoughReplicasException` (ou `NotEnoughReplicasAfterAppendException`). Isso garante durabilidade: a mensagem não é confirmada a menos que o número mínimo de réplicas sincronizadas a tenha recebido."
+    },
+    "en": {
+      "question": "What happens when `min.insync.replicas=2` and `acks=all`, but only 1 replica is in the ISR at write time?",
+      "options": {
+        "A": "The message is written to the single available replica and acknowledged to the producer",
+        "B": "The leader broker waits indefinitely until another replica joins the ISR",
+        "C": "The message is silently discarded",
+        "D": "The broker returns `NotEnoughReplicasException` to the producer"
+      },
+      "explanation": "When `acks=all` and the number of ISR replicas is below `min.insync.replicas`, the leader broker rejects the write and returns `NotEnoughReplicasException` (or `NotEnoughReplicasAfterAppendException`). This enforces durability: the message is not acknowledged unless the minimum number of in-sync replicas has received it."
+    }
+  },
+  {
+    "id": "q013",
+    "category": "Producers",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "Qual é o efeito de configurar `max.in.flight.requests.per.connection=1` em um producer Kafka?",
+      "options": {
+        "A": "Garante a ordem das mensagens por partição, pois apenas uma requisição pode estar em trânsito por vez",
+        "B": "Aumenta o throughput ao permitir que o producer envie mensagens para múltiplas partições simultaneamente",
+        "C": "Habilita a idempotência automática do producer",
+        "D": "Limita o tamanho máximo de cada batch enviado ao broker"
+      },
+      "explanation": "Com `max.in.flight.requests.per.connection=1`, o producer aguarda a confirmação de cada requisição antes de enviar a próxima, garantindo a ordem de entrega por partição mesmo em caso de retentativas. Sem essa configuração (e sem idempotência), retries podem causar reordenação de mensagens. Com `enable.idempotence=true`, o Kafka garante ordem com até 5 requisições em voo."
+    },
+    "en": {
+      "question": "What is the effect of setting `max.in.flight.requests.per.connection=1` on a Kafka producer?",
+      "options": {
+        "A": "Guarantees per-partition message ordering, since only one request can be in-flight at a time",
+        "B": "Increases throughput by allowing the producer to send to multiple partitions simultaneously",
+        "C": "Automatically enables producer idempotence",
+        "D": "Limits the maximum size of each batch sent to the broker"
+      },
+      "explanation": "With `max.in.flight.requests.per.connection=1`, the producer waits for acknowledgment of each request before sending the next, guaranteeing delivery order per partition even during retries. Without this setting (and without idempotence), retries can cause message reordering. With `enable.idempotence=true`, Kafka guarantees ordering with up to 5 in-flight requests."
+    }
+  },
+  {
+    "id": "q014",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "O que é o `__consumer_offsets` no Apache Kafka?",
+      "options": {
+        "A": "Um arquivo de log local em cada broker que armazena os offsets das partições líderes",
+        "B": "Uma configuração do consumer que define a política de reset de offset",
+        "C": "Um tópico interno do Kafka usado para persistir os offsets commitados pelos consumer groups",
+        "D": "O intervalo de tempo entre commits automáticos de offset"
+      },
+      "explanation": "`__consumer_offsets` é um tópico interno compactado do Kafka onde os offsets commitados pelos consumer groups são armazenados de forma durável. Ele substitui o armazenamento de offsets no ZooKeeper (descontinuado desde o Kafka 0.10). Cada entrada registra o grupo, o tópico, a partição e o offset commitado."
+    },
+    "en": {
+      "question": "What is `__consumer_offsets` in Apache Kafka?",
+      "options": {
+        "A": "A local log file on each broker storing offsets of leader partitions",
+        "B": "A consumer configuration that defines the offset reset policy",
+        "C": "An internal Kafka topic used to durably store committed offsets for consumer groups",
+        "D": "The time interval between automatic offset commits"
+      },
+      "explanation": "`__consumer_offsets` is an internal compacted Kafka topic where consumer group committed offsets are durably stored. It replaced ZooKeeper-based offset storage (deprecated since Kafka 0.10). Each entry records the group, topic, partition, and committed offset."
+    }
+  },
+  {
+    "id": "q015",
+    "category": "Kafka Connect",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é a diferença entre um Source Connector e um Sink Connector no Kafka Connect?",
+      "options": {
+        "A": "Source Connectors leem dados do Kafka e os gravam em sistemas externos; Sink Connectors fazem o oposto",
+        "B": "Source Connectors ingerem dados de sistemas externos para o Kafka; Sink Connectors exportam dados do Kafka para sistemas externos",
+        "C": "Source Connectors operam em modo standalone; Sink Connectors operam apenas em modo distribuído",
+        "D": "Source Connectors suportam transformações SMT; Sink Connectors não suportam"
+      },
+      "explanation": "No Kafka Connect, um Source Connector lê dados de um sistema externo (banco de dados, fila, API) e os publica em tópicos Kafka. Um Sink Connector consome mensagens de tópicos Kafka e as grava em sistemas externos (data warehouse, Elasticsearch, S3). Ambos suportam Single Message Transforms (SMTs) e podem operar em modo standalone ou distribuído."
+    },
+    "en": {
+      "question": "What is the difference between a Source Connector and a Sink Connector in Kafka Connect?",
+      "options": {
+        "A": "Source Connectors read data from Kafka and write it to external systems; Sink Connectors do the opposite",
+        "B": "Source Connectors ingest data from external systems into Kafka; Sink Connectors export data from Kafka to external systems",
+        "C": "Source Connectors operate in standalone mode; Sink Connectors only operate in distributed mode",
+        "D": "Source Connectors support SMT transformations; Sink Connectors do not"
+      },
+      "explanation": "In Kafka Connect, a Source Connector reads data from an external system (database, queue, API) and publishes it to Kafka topics. A Sink Connector consumes messages from Kafka topics and writes them to external systems (data warehouse, Elasticsearch, S3). Both support Single Message Transforms (SMTs) and can run in standalone or distributed mode."
+    }
+  },
+  {
+    "id": "q016",
+    "category": "Security",
+    "difficulty": "hard",
+    "correct": "C",
+    "pt": {
+      "question": "Qual das seguintes afirmações descreve corretamente o funcionamento das ACLs no Apache Kafka?",
+      "options": {
+        "A": "ACLs são configuradas exclusivamente via arquivo `server.properties` e requerem reinicialização do broker",
+        "B": "ACLs no Kafka seguem um modelo de whitelist implícita: tudo é permitido por padrão e ACLs adicionam restrições",
+        "C": "Quando `allow.everyone.if.no.acl.found=false`, qualquer operação sem ACL explícita é negada; ACLs funcionam como whitelist",
+        "D": "ACLs se aplicam apenas a consumers; producers são autenticados somente via SSL"
+      },
+      "explanation": "O sistema de ACLs do Kafka funciona como whitelist quando `allow.everyone.if.no.acl.found=false` (padrão recomendado para produção): se não houver ACL definida para um recurso, o acesso é negado. ACLs são gerenciadas via `kafka-acls.sh` ou pela API AdminClient e armazenadas no ZooKeeper/KRaft. Elas se aplicam a producers, consumers, connectors e qualquer cliente Kafka."
+    },
+    "en": {
+      "question": "Which statement correctly describes how ACLs work in Apache Kafka?",
+      "options": {
+        "A": "ACLs are configured exclusively via `server.properties` and require a broker restart",
+        "B": "Kafka ACLs follow an implicit whitelist model: everything is allowed by default and ACLs add restrictions",
+        "C": "When `allow.everyone.if.no.acl.found=false`, any operation without an explicit ACL is denied; ACLs act as a whitelist",
+        "D": "ACLs apply only to consumers; producers are authenticated solely via SSL"
+      },
+      "explanation": "Kafka's ACL system acts as a whitelist when `allow.everyone.if.no.acl.found=false` (recommended for production): if no ACL is defined for a resource, access is denied. ACLs are managed via `kafka-acls.sh` or the AdminClient API and stored in ZooKeeper/KRaft. They apply to producers, consumers, connectors, and any Kafka client."
+    }
+  },
+  {
+    "id": "q017",
+    "category": "Monitoring & Operations",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "Qual métrica JMX indica o atraso de um consumer group em relação ao final de uma partição?",
+      "options": {
+        "A": "`kafka.consumer:type=consumer-fetch-manager-metrics,client-id=X,topic=Y,partition=Z,attribute=records-lag`",
+        "B": "`kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec`",
+        "C": "`kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce`",
+        "D": "`kafka.log:type=LogFlushStats,name=LogFlushRateAndTimeMs`"
+      },
+      "explanation": "O consumer lag é exposto via JMX pelo atributo `records-lag` no MBean `kafka.consumer:type=consumer-fetch-manager-metrics`. Ele indica quantas mensagens o consumer está atrás do offset mais recente (log-end-offset) em uma partição específica. Ferramentas como `kafka-consumer-groups.sh --describe` e Confluent Control Center também expõem essa métrica de forma agregada."
+    },
+    "en": {
+      "question": "Which JMX metric indicates the lag of a consumer group relative to the end of a partition?",
+      "options": {
+        "A": "`kafka.consumer:type=consumer-fetch-manager-metrics,client-id=X,topic=Y,partition=Z,attribute=records-lag`",
+        "B": "`kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec`",
+        "C": "`kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce`",
+        "D": "`kafka.log:type=LogFlushStats,name=LogFlushRateAndTimeMs`"
+      },
+      "explanation": "Consumer lag is exposed via JMX through the `records-lag` attribute in the `kafka.consumer:type=consumer-fetch-manager-metrics` MBean. It indicates how many messages the consumer is behind the latest offset (log-end-offset) for a specific partition. Tools like `kafka-consumer-groups.sh --describe` and Confluent Control Center also expose this metric in aggregated form."
+    }
+  },
+  {
+    "id": "q018",
+    "category": "Monitoring & Operations",
+    "difficulty": "hard",
+    "correct": "D",
+    "pt": {
+      "question": "O que é log compaction no Kafka e quando deve ser habilitado?",
+      "options": {
+        "A": "Compressão de segmentos de log usando codecs como Snappy ou LZ4 para reduzir uso de disco",
+        "B": "Remoção de todos os segmentos de log mais antigos que `log.retention.hours`",
+        "C": "Mesclagem de múltiplos segmentos de log em um único arquivo para otimizar leituras sequenciais",
+        "D": "Processo que retém apenas a mensagem mais recente por chave em um tópico, garantindo que o log preserve o estado atual de cada chave"
+      },
+      "explanation": "Log compaction (`cleanup.policy=compact`) faz com que o Kafka retenha apenas o último valor para cada chave de mensagem, descartando versões anteriores. É ideal para tópicos que representam estado (ex: tabelas de banco de dados, configurações, snapshots de entidades). Diferente da retenção por tempo/tamanho, a compactação garante que nenhuma chave seja completamente removida do log (a menos que o valor seja `null`, que representa um tombstone/deleção)."
+    },
+    "en": {
+      "question": "What is log compaction in Kafka and when should it be enabled?",
+      "options": {
+        "A": "Compression of log segments using codecs like Snappy or LZ4 to reduce disk usage",
+        "B": "Removal of all log segments older than `log.retention.hours`",
+        "C": "Merging multiple log segments into a single file to optimize sequential reads",
+        "D": "A process that retains only the most recent message per key in a topic, ensuring the log preserves the current state of each key"
+      },
+      "explanation": "Log compaction (`cleanup.policy=compact`) causes Kafka to retain only the latest value for each message key, discarding older versions. It is ideal for topics representing state (e.g., database tables, configurations, entity snapshots). Unlike time/size-based retention, compaction guarantees no key is completely removed from the log (unless the value is `null`, which acts as a tombstone/deletion marker)."
+    }
+  },
+  {
+    "id": "q019",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "hard",
+    "correct": "B",
+    "pt": {
+      "question": "Como o Kafka garante a ordenação de mensagens com a mesma chave em um tópico com múltiplas partições?",
+      "options": {
+        "A": "O broker reordena as mensagens globalmente antes de entregá-las ao consumer",
+        "B": "O particionador padrão usa hash da chave para sempre rotear mensagens com a mesma chave para a mesma partição, e a ordem é garantida dentro de cada partição",
+        "C": "O consumer group coordena a leitura entre partições para garantir a ordem global",
+        "D": "Mensagens com a mesma chave são armazenadas em um tópico separado de ordenação"
+      },
+      "explanation": "O Kafka garante ordenação apenas dentro de uma partição. O particionador padrão (`DefaultPartitioner`) aplica `murmur2(key) % numPartitions` para determinar a partição destino, garantindo que mensagens com a mesma chave sempre vão para a mesma partição (enquanto o número de partições não mudar). Assim, a ordem por chave é preservada. Não há garantia de ordem global entre partições diferentes."
+    },
+    "en": {
+      "question": "How does Kafka guarantee ordering of messages with the same key in a topic with multiple partitions?",
+      "options": {
+        "A": "The broker globally reorders messages before delivering them to the consumer",
+        "B": "The default partitioner hashes the key to always route messages with the same key to the same partition, and ordering is guaranteed within each partition",
+        "C": "The consumer group coordinates reads across partitions to guarantee global order",
+        "D": "Messages with the same key are stored in a separate ordering topic"
+      },
+      "explanation": "Kafka guarantees ordering only within a single partition. The default partitioner (`DefaultPartitioner`) applies `murmur2(key) % numPartitions` to determine the target partition, ensuring messages with the same key always go to the same partition (as long as the partition count does not change). This preserves per-key ordering. There is no global ordering guarantee across different partitions."
+    }
+  },
+  {
+    "id": "q020",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "hard",
+    "correct": "C",
+    "pt": {
+      "question": "O que é o Cooperative Sticky Assignor e qual problema ele resolve em relação ao Range e RoundRobin Assignors?",
+      "options": {
+        "A": "Ele distribui partições de forma aleatória para maximizar o paralelismo durante rebalanceamentos",
+        "B": "Ele elimina completamente os rebalanceamentos ao fixar permanentemente as partições a consumers específicos",
+        "C": "Ele realiza rebalanceamentos incrementais, revogando apenas as partições que precisam ser redistribuídas, evitando a parada total (stop-the-world) do consumer group",
+        "D": "Ele prioriza consumers com menor lag para receber novas partições durante o rebalanceamento"
+      },
+      "explanation": "O `CooperativeStickyAssignor` (introduzido no Kafka 2.4) implementa o protocolo de rebalanceamento incremental cooperativo. Ao contrário dos assignors tradicionais (Range, RoundRobin, Sticky) que revogam todas as partições de todos os consumers no início do rebalanceamento (stop-the-world), o Cooperative Sticky revoga apenas as partições que precisam mudar de dono. Isso reduz drasticamente a interrupção no processamento durante eventos de rebalanceamento."
+    },
+    "en": {
+      "question": "What is the Cooperative Sticky Assignor and what problem does it solve compared to Range and RoundRobin Assignors?",
+      "options": {
+        "A": "It distributes partitions randomly to maximize parallelism during rebalances",
+        "B": "It completely eliminates rebalances by permanently pinning partitions to specific consumers",
+        "C": "It performs incremental rebalances, revoking only the partitions that need to be redistributed, avoiding a full stop-the-world pause of the consumer group",
+        "D": "It prioritizes consumers with lower lag to receive new partitions during rebalancing"
+      },
+      "explanation": "The `CooperativeStickyAssignor` (introduced in Kafka 2.4) implements the incremental cooperative rebalancing protocol. Unlike traditional assignors (Range, RoundRobin, Sticky) that revoke all partitions from all consumers at the start of a rebalance (stop-the-world), Cooperative Sticky only revokes partitions that need to change ownership. This drastically reduces processing interruption during rebalance events."
+    }
+  },
+  {
+    "id": "q021",
+    "category": "Kafka Core Concepts",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é a função do `log.dirs` na configuração de um broker Kafka?",
+      "options": {
+        "A": "Define o diretório onde os logs de aplicação do broker são gravados",
+        "B": "Define um ou mais diretórios onde os segmentos de log das partições são armazenados em disco",
+        "C": "Especifica o caminho para o arquivo de configuração do ZooKeeper",
+        "D": "Indica o diretório de snapshots usados pelo KRaft para recuperação"
+      },
+      "explanation": "`log.dirs` especifica os diretórios de dados onde o Kafka armazena os segmentos de log das partições. É possível configurar múltiplos diretórios (separados por vírgula) para distribuir a carga de I/O entre diferentes discos. O Kafka distribui as partições entre os diretórios usando uma estratégia de menor número de partições por diretório."
+    },
+    "en": {
+      "question": "What is the function of `log.dirs` in a Kafka broker configuration?",
+      "options": {
+        "A": "Defines the directory where broker application logs are written",
+        "B": "Defines one or more directories where partition log segments are stored on disk",
+        "C": "Specifies the path to the ZooKeeper configuration file",
+        "D": "Indicates the snapshot directory used by KRaft for recovery"
+      },
+      "explanation": "`log.dirs` specifies the data directories where Kafka stores partition log segments. Multiple directories (comma-separated) can be configured to distribute I/O load across different disks. Kafka distributes partitions across directories using a least-partitions-per-directory strategy."
+    }
+  },
+  {
+    "id": "q022",
+    "category": "Kafka Core Concepts",
+    "difficulty": "hard",
+    "correct": "C",
+    "pt": {
+      "question": "No modo KRaft, qual é o papel dos nós com `process.roles=controller`?",
+      "options": {
+        "A": "Armazenar os segmentos de log das partições e atender requisições de producers e consumers",
+        "B": "Executar o Kafka Connect em modo distribuído sem depender de brokers externos",
+        "C": "Participar do quorum Raft para gerenciar metadados do cluster, incluindo eleições de líderes e mudanças de configuração",
+        "D": "Monitorar a saúde dos brokers e reiniciá-los automaticamente em caso de falha"
+      },
+      "explanation": "No KRaft, nós com `process.roles=controller` formam o quorum de metadados baseado no algoritmo Raft. Eles armazenam e replicam o log de metadados do cluster (tópicos, partições, líderes, configurações) e conduzem eleições de líderes de partição. Um nó pode ter `process.roles=broker,controller` (modo combinado) ou ser dedicado. O quorum recomendado para produção é de 3 ou 5 controllers."
+    },
+    "en": {
+      "question": "In KRaft mode, what is the role of nodes with `process.roles=controller`?",
+      "options": {
+        "A": "Store partition log segments and serve producer and consumer requests",
+        "B": "Run Kafka Connect in distributed mode without depending on external brokers",
+        "C": "Participate in the Raft quorum to manage cluster metadata, including leader elections and configuration changes",
+        "D": "Monitor broker health and automatically restart them upon failure"
+      },
+      "explanation": "In KRaft, nodes with `process.roles=controller` form the metadata quorum based on the Raft algorithm. They store and replicate the cluster metadata log (topics, partitions, leaders, configurations) and conduct partition leader elections. A node can have `process.roles=broker,controller` (combined mode) or be dedicated. The recommended production quorum is 3 or 5 controllers."
+    }
+  },
+  {
+    "id": "q023",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "easy",
+    "correct": "A",
+    "pt": {
+      "question": "Qual configuração de tópico define por quanto tempo as mensagens são retidas antes de serem deletadas?",
+      "options": {
+        "A": "`retention.ms`",
+        "B": "`segment.ms`",
+        "C": "`delete.retention.ms`",
+        "D": "`log.flush.interval.ms`"
+      },
+      "explanation": "`retention.ms` define o tempo máximo (em milissegundos) que uma mensagem é retida em um tópico com `cleanup.policy=delete`. Após esse período, os segmentos de log elegíveis são removidos. O valor padrão é 604800000 (7 dias). `delete.retention.ms` é específico para tópicos compactados e define por quanto tempo os tombstones são mantidos."
+    },
+    "en": {
+      "question": "Which topic configuration defines how long messages are retained before being deleted?",
+      "options": {
+        "A": "`retention.ms`",
+        "B": "`segment.ms`",
+        "C": "`delete.retention.ms`",
+        "D": "`log.flush.interval.ms`"
+      },
+      "explanation": "`retention.ms` defines the maximum time (in milliseconds) a message is retained in a topic with `cleanup.policy=delete`. After this period, eligible log segments are removed. The default value is 604800000 (7 days). `delete.retention.ms` is specific to compacted topics and defines how long tombstone markers are kept."
+    }
+  },
+  {
+    "id": "q024",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que é um segmento de log no Kafka e qual configuração controla seu tamanho máximo?",
+      "options": {
+        "A": "É o arquivo de índice que mapeia offsets para posições físicas; controlado por `index.interval.bytes`",
+        "B": "É a unidade de replicação entre brokers; controlado por `replica.fetch.max.bytes`",
+        "C": "É o buffer de memória usado pelo producer antes de enviar ao broker; controlado por `buffer.memory`",
+        "D": "É um arquivo de log imutável que armazena mensagens sequencialmente; controlado por `log.segment.bytes`"
+      },
+      "explanation": "O log de cada partição é dividido em segmentos — arquivos imutáveis que armazenam mensagens sequencialmente. `log.segment.bytes` (padrão: 1 GB) define o tamanho máximo de um segmento ativo antes de ser fechado e um novo ser aberto. Segmentos fechados são elegíveis para retenção/compactação. Cada segmento tem um arquivo `.log` (dados), `.index` (índice de offsets) e `.timeindex` (índice de timestamps)."
+    },
+    "en": {
+      "question": "What is a log segment in Kafka and which configuration controls its maximum size?",
+      "options": {
+        "A": "It is the index file mapping offsets to physical positions; controlled by `index.interval.bytes`",
+        "B": "It is the replication unit between brokers; controlled by `replica.fetch.max.bytes`",
+        "C": "It is the memory buffer used by the producer before sending to the broker; controlled by `buffer.memory`",
+        "D": "It is an immutable log file that stores messages sequentially; controlled by `log.segment.bytes`"
+      },
+      "explanation": "Each partition's log is divided into segments — immutable files that store messages sequentially. `log.segment.bytes` (default: 1 GB) defines the maximum size of an active segment before it is closed and a new one is opened. Closed segments are eligible for retention/compaction. Each segment has a `.log` file (data), `.index` file (offset index), and `.timeindex` file (timestamp index)."
+    }
+  },
+  {
+    "id": "q025",
+    "category": "Producers",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "O que acontece quando o buffer do producer (`buffer.memory`) está cheio e `max.block.ms` é atingido?",
+      "options": {
+        "A": "O producer descarta silenciosamente as mensagens mais antigas para liberar espaço",
+        "B": "O producer aumenta automaticamente o tamanho do buffer em 50%",
+        "C": "O producer lança `BufferExhaustedException` (ou `TimeoutException`) na thread que chama `send()`",
+        "D": "O producer para de aceitar novas mensagens e aguarda indefinidamente até o buffer liberar"
+      },
+      "explanation": "Quando o buffer de memória do producer está cheio, a chamada `send()` bloqueia por até `max.block.ms` (padrão: 60 segundos) aguardando espaço. Se o tempo expirar sem que espaço seja liberado, uma `TimeoutException` é lançada. Isso ocorre quando o producer está enviando mais rápido do que o broker consegue confirmar, indicando necessidade de ajuste em `batch.size`, `linger.ms` ou na capacidade do broker."
+    },
+    "en": {
+      "question": "What happens when the producer buffer (`buffer.memory`) is full and `max.block.ms` is reached?",
+      "options": {
+        "A": "The producer silently discards the oldest messages to free space",
+        "B": "The producer automatically increases the buffer size by 50%",
+        "C": "The producer throws `BufferExhaustedException` (or `TimeoutException`) on the thread calling `send()`",
+        "D": "The producer stops accepting new messages and waits indefinitely until the buffer frees up"
+      },
+      "explanation": "When the producer memory buffer is full, the `send()` call blocks for up to `max.block.ms` (default: 60 seconds) waiting for space. If the time expires without space being freed, a `TimeoutException` is thrown. This occurs when the producer is sending faster than the broker can acknowledge, indicating a need to tune `batch.size`, `linger.ms`, or broker capacity."
+    }
+  },
+  {
+    "id": "q026",
+    "category": "Producers",
+    "difficulty": "hard",
+    "correct": "B",
+    "pt": {
+      "question": "O que são transações no Kafka e qual par de configurações é necessário para habilitá-las no producer?",
+      "options": {
+        "A": "`enable.idempotence=true` e `acks=1`",
+        "B": "`enable.idempotence=true` e `transactional.id=<id-único>`",
+        "C": "`isolation.level=read_committed` e `acks=all`",
+        "D": "`transactional.id=<id-único>` e `max.in.flight.requests.per.connection=1`"
+      },
+      "explanation": "Transações Kafka permitem que um producer escreva em múltiplos tópicos/partições de forma atômica (tudo ou nada). Para habilitá-las, é necessário `enable.idempotence=true` (implícito com transações) e um `transactional.id` único e estável por instância de producer. O consumer deve usar `isolation.level=read_committed` para ler apenas mensagens de transações confirmadas. Transações são a base do padrão exactly-once semantics (EOS)."
+    },
+    "en": {
+      "question": "What are Kafka transactions and which pair of configurations is required to enable them on the producer?",
+      "options": {
+        "A": "`enable.idempotence=true` and `acks=1`",
+        "B": "`enable.idempotence=true` and `transactional.id=<unique-id>`",
+        "C": "`isolation.level=read_committed` and `acks=all`",
+        "D": "`transactional.id=<unique-id>` and `max.in.flight.requests.per.connection=1`"
+      },
+      "explanation": "Kafka transactions allow a producer to write to multiple topics/partitions atomically (all or nothing). To enable them, `enable.idempotence=true` (implicit with transactions) and a unique, stable `transactional.id` per producer instance are required. The consumer must use `isolation.level=read_committed` to read only messages from committed transactions. Transactions are the foundation of exactly-once semantics (EOS)."
+    }
+  },
+  {
+    "id": "q027",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "Qual é a diferença entre `commitSync()` e `commitAsync()` no consumer Kafka?",
+      "options": {
+        "A": "`commitSync()` bloqueia até o broker confirmar o commit e faz retry automático em falhas; `commitAsync()` não bloqueia e não faz retry automático",
+        "B": "`commitSync()` commita apenas o offset atual; `commitAsync()` commita todos os offsets pendentes em lote",
+        "C": "`commitAsync()` é mais seguro pois garante entrega exactly-once; `commitSync()` pode causar duplicatas",
+        "D": "`commitSync()` só funciona com `enable.auto.commit=false`; `commitAsync()` funciona em ambos os modos"
+      },
+      "explanation": "`commitSync()` é síncrono: bloqueia a thread até o broker confirmar o commit e realiza retries automáticos em caso de erros recuperáveis, garantindo que o offset seja commitado antes de continuar. `commitAsync()` é não-bloqueante e aceita um callback opcional, mas não faz retry automático (pois um retry tardio poderia sobrescrever um commit mais recente). A combinação comum é usar `commitAsync()` no loop normal e `commitSync()` no shutdown para garantir o último commit."
+    },
+    "en": {
+      "question": "What is the difference between `commitSync()` and `commitAsync()` in a Kafka consumer?",
+      "options": {
+        "A": "`commitSync()` blocks until the broker confirms the commit and retries automatically on failure; `commitAsync()` is non-blocking and does not retry automatically",
+        "B": "`commitSync()` commits only the current offset; `commitAsync()` commits all pending offsets in batch",
+        "C": "`commitAsync()` is safer as it guarantees exactly-once delivery; `commitSync()` can cause duplicates",
+        "D": "`commitSync()` only works with `enable.auto.commit=false`; `commitAsync()` works in both modes"
+      },
+      "explanation": "`commitSync()` is synchronous: it blocks the thread until the broker confirms the commit and retries automatically on recoverable errors, ensuring the offset is committed before continuing. `commitAsync()` is non-blocking and accepts an optional callback, but does not retry automatically (as a late retry could overwrite a more recent commit). A common pattern is to use `commitAsync()` in the normal poll loop and `commitSync()` on shutdown to guarantee the last commit."
+    }
+  },
+  {
+    "id": "q028",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "hard",
+    "correct": "D",
+    "pt": {
+      "question": "O que é `session.timeout.ms` e como ele interage com `heartbeat.interval.ms` no consumer Kafka?",
+      "options": {
+        "A": "`session.timeout.ms` define o tempo máximo para processar um batch de mensagens; `heartbeat.interval.ms` define a frequência de commits de offset",
+        "B": "Ambos controlam o tempo máximo de uma sessão TLS entre consumer e broker",
+        "C": "`heartbeat.interval.ms` deve ser maior que `session.timeout.ms` para evitar rebalanceamentos desnecessários",
+        "D": "`session.timeout.ms` é o tempo máximo sem heartbeat antes do broker considerar o consumer morto; `heartbeat.interval.ms` deve ser menor que 1/3 de `session.timeout.ms`"
+      },
+      "explanation": "O consumer envia heartbeats periodicamente ao Group Coordinator para sinalizar que está vivo. `session.timeout.ms` define o tempo máximo que o broker aguarda sem receber um heartbeat antes de declarar o consumer morto e iniciar um rebalanceamento. `heartbeat.interval.ms` define a frequência dos heartbeats e deve ser configurado como no máximo 1/3 de `session.timeout.ms` para garantir múltiplas tentativas antes do timeout."
+    },
+    "en": {
+      "question": "What is `session.timeout.ms` and how does it interact with `heartbeat.interval.ms` in a Kafka consumer?",
+      "options": {
+        "A": "`session.timeout.ms` defines the maximum time to process a message batch; `heartbeat.interval.ms` defines the offset commit frequency",
+        "B": "Both control the maximum duration of a TLS session between consumer and broker",
+        "C": "`heartbeat.interval.ms` must be greater than `session.timeout.ms` to avoid unnecessary rebalances",
+        "D": "`session.timeout.ms` is the maximum time without a heartbeat before the broker considers the consumer dead; `heartbeat.interval.ms` should be less than 1/3 of `session.timeout.ms`"
+      },
+      "explanation": "The consumer periodically sends heartbeats to the Group Coordinator to signal it is alive. `session.timeout.ms` defines the maximum time the broker waits without receiving a heartbeat before declaring the consumer dead and triggering a rebalance. `heartbeat.interval.ms` defines the heartbeat frequency and should be set to at most 1/3 of `session.timeout.ms` to ensure multiple attempts before the timeout."
+    }
+  },
+  {
+    "id": "q029",
+    "category": "Kafka Connect",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "O que são Single Message Transforms (SMTs) no Kafka Connect?",
+      "options": {
+        "A": "Plugins que permitem converter o formato de serialização de Avro para JSON em tempo de execução",
+        "B": "Configurações que definem o número máximo de tarefas paralelas por conector",
+        "C": "Transformações leves aplicadas a cada mensagem individualmente no pipeline do conector, sem necessidade de um processador de stream externo",
+        "D": "Mecanismos de filtragem que descartam mensagens com base em regras de schema"
+      },
+      "explanation": "SMTs (Single Message Transforms) são transformações aplicadas mensagem a mensagem dentro do próprio Kafka Connect, sem necessidade de Kafka Streams ou outro processador externo. Exemplos incluem: `ReplaceField` (renomear/remover campos), `MaskField` (mascarar dados sensíveis), `InsertField` (adicionar campos como timestamp), `ExtractField` e `TimestampConverter`. SMTs são encadeáveis e configurados diretamente na definição do conector."
+    },
+    "en": {
+      "question": "What are Single Message Transforms (SMTs) in Kafka Connect?",
+      "options": {
+        "A": "Plugins that convert the serialization format from Avro to JSON at runtime",
+        "B": "Configurations that define the maximum number of parallel tasks per connector",
+        "C": "Lightweight transformations applied to each message individually in the connector pipeline, without needing an external stream processor",
+        "D": "Filtering mechanisms that discard messages based on schema rules"
+      },
+      "explanation": "SMTs (Single Message Transforms) are per-message transformations applied within Kafka Connect itself, without needing Kafka Streams or another external processor. Examples include: `ReplaceField` (rename/remove fields), `MaskField` (mask sensitive data), `InsertField` (add fields like timestamp), `ExtractField`, and `TimestampConverter`. SMTs are chainable and configured directly in the connector definition."
+    }
+  },
+  {
+    "id": "q030",
+    "category": "Security",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "Qual é a diferença entre autenticação e autorização no contexto de segurança do Apache Kafka?",
+      "options": {
+        "A": "Autenticação define o que um cliente pode fazer; autorização verifica a identidade do cliente",
+        "B": "Autenticação verifica a identidade do cliente (quem é); autorização determina o que o cliente autenticado pode fazer (o que pode acessar)",
+        "C": "Autenticação é configurada via ACLs; autorização é configurada via SASL",
+        "D": "No Kafka, autenticação e autorização são configuradas pelo mesmo mecanismo: SSL/TLS"
+      },
+      "explanation": "Autenticação (via SASL/PLAIN, SASL/SCRAM, SASL/GSSAPI/Kerberos, mTLS) verifica a identidade do cliente — quem está se conectando. Autorização (via ACLs gerenciadas pelo `AclAuthorizer` ou `StandardAuthorizer`) determina quais operações o principal autenticado pode realizar sobre quais recursos (tópicos, grupos, cluster). Ambos são independentes e complementares: um cliente pode ser autenticado mas não autorizado a acessar um tópico específico."
+    },
+    "en": {
+      "question": "What is the difference between authentication and authorization in the context of Apache Kafka security?",
+      "options": {
+        "A": "Authentication defines what a client can do; authorization verifies the client's identity",
+        "B": "Authentication verifies the client's identity (who they are); authorization determines what the authenticated client can do (what they can access)",
+        "C": "Authentication is configured via ACLs; authorization is configured via SASL",
+        "D": "In Kafka, authentication and authorization are configured by the same mechanism: SSL/TLS"
+      },
+      "explanation": "Authentication (via SASL/PLAIN, SASL/SCRAM, SASL/GSSAPI/Kerberos, mTLS) verifies the client's identity — who is connecting. Authorization (via ACLs managed by `AclAuthorizer` or `StandardAuthorizer`) determines which operations the authenticated principal can perform on which resources (topics, groups, cluster). Both are independent and complementary: a client can be authenticated but not authorized to access a specific topic."
+    }
+  },
+  {
+    "id": "q031",
+    "category": "Monitoring & Operations",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "Qual ferramenta de linha de comando permite verificar o lag de um consumer group no Kafka?",
+      "options": {
+        "A": "`kafka-topics.sh --describe`",
+        "B": "`kafka-configs.sh --describe`",
+        "C": "`kafka-consumer-groups.sh --describe --group <nome-do-grupo>`",
+        "D": "`kafka-log-dirs.sh --describe`"
+      },
+      "explanation": "`kafka-consumer-groups.sh --describe --group <nome>` exibe o estado de cada partição atribuída ao grupo, incluindo: offset atual do consumer, log-end-offset do broker e o lag (diferença entre os dois). É a ferramenta padrão para diagnóstico de atraso em consumer groups. Também permite listar grupos (`--list`), resetar offsets (`--reset-offsets`) e deletar grupos (`--delete`)."
+    },
+    "en": {
+      "question": "Which command-line tool allows you to check the lag of a consumer group in Kafka?",
+      "options": {
+        "A": "`kafka-topics.sh --describe`",
+        "B": "`kafka-configs.sh --describe`",
+        "C": "`kafka-consumer-groups.sh --describe --group <group-name>`",
+        "D": "`kafka-log-dirs.sh --describe`"
+      },
+      "explanation": "`kafka-consumer-groups.sh --describe --group <name>` displays the state of each partition assigned to the group, including: current consumer offset, broker log-end-offset, and lag (the difference between the two). It is the standard tool for diagnosing consumer group lag. It also supports listing groups (`--list`), resetting offsets (`--reset-offsets`), and deleting groups (`--delete`)."
+    }
+  },
+  {
+    "id": "q032",
+    "category": "Monitoring & Operations",
+    "difficulty": "hard",
+    "correct": "A",
+    "pt": {
+      "question": "O que a métrica `UnderReplicatedPartitions` indica e por que é crítica monitorá-la?",
+      "options": {
+        "A": "Indica partições cujo número de réplicas no ISR é menor que o fator de replicação configurado, sinalizando risco de perda de dados em caso de falha do líder",
+        "B": "Indica partições que estão recebendo menos mensagens que a média do cluster",
+        "C": "Indica partições cujo líder está em um broker sobrecarregado com mais de 80% de CPU",
+        "D": "Indica partições que não tiveram nenhuma escrita nas últimas 24 horas"
+      },
+      "explanation": "`UnderReplicatedPartitions` (MBean: `kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions`) conta partições onde o ISR tem menos réplicas que o `replication.factor`. Valor > 0 indica que réplicas estão atrasadas ou brokers estão fora do ar. É crítico porque se o líder falhar com réplicas fora do ISR, pode haver perda de dados (se `unclean.leader.election.enable=true`) ou indisponibilidade. Deve ser monitorado com alerta para qualquer valor acima de 0."
+    },
+    "en": {
+      "question": "What does the `UnderReplicatedPartitions` metric indicate and why is it critical to monitor?",
+      "options": {
+        "A": "Indicates partitions whose ISR replica count is less than the configured replication factor, signaling data loss risk if the leader fails",
+        "B": "Indicates partitions receiving fewer messages than the cluster average",
+        "C": "Indicates partitions whose leader is on a broker with over 80% CPU usage",
+        "D": "Indicates partitions that have had no writes in the last 24 hours"
+      },
+      "explanation": "`UnderReplicatedPartitions` (MBean: `kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions`) counts partitions where the ISR has fewer replicas than the `replication.factor`. A value > 0 indicates replicas are lagging or brokers are down. It is critical because if the leader fails with replicas outside the ISR, data loss (if `unclean.leader.election.enable=true`) or unavailability may occur. It should be monitored with an alert for any value above 0."
+    }
+  },
+  {
+    "id": "q033",
+    "category": "Monitoring & Operations",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que é o `preferred replica election` e quando deve ser executado?",
+      "options": {
+        "A": "Um processo automático que move partições para brokers com menor carga de CPU",
+        "B": "Uma operação que aumenta o fator de replicação de tópicos críticos",
+        "C": "Um mecanismo que sincroniza réplicas atrasadas forçando um fetch completo do líder",
+        "D": "Uma operação que restaura a liderança das partições para suas réplicas preferenciais (primeira da lista de réplicas), rebalanceando a carga entre brokers"
+      },
+      "explanation": "Cada partição tem uma 'preferred replica' — a primeira réplica na lista de réplicas atribuída. Após falhas e recuperações de brokers, a liderança pode ficar desbalanceada. O `kafka-leader-election.sh --election-type PREFERRED` (ou a configuração `auto.leader.rebalance.enable=true`) restaura a liderança para as réplicas preferenciais, redistribuindo a carga de leitura/escrita uniformemente entre os brokers."
+    },
+    "en": {
+      "question": "What is `preferred replica election` and when should it be executed?",
+      "options": {
+        "A": "An automatic process that moves partitions to brokers with lower CPU load",
+        "B": "An operation that increases the replication factor of critical topics",
+        "C": "A mechanism that syncs lagging replicas by forcing a full fetch from the leader",
+        "D": "An operation that restores partition leadership to their preferred replicas (first in the replica list), rebalancing load across brokers"
+      },
+      "explanation": "Each partition has a 'preferred replica' — the first replica in its assigned replica list. After broker failures and recoveries, leadership can become unbalanced. `kafka-leader-election.sh --election-type PREFERRED` (or the `auto.leader.rebalance.enable=true` setting) restores leadership to preferred replicas, redistributing read/write load evenly across brokers."
+    }
+  },
+  {
+    "id": "q034",
+    "category": "Security",
+    "difficulty": "hard",
+    "correct": "B",
+    "pt": {
+      "question": "Como funciona o SASL/SCRAM no Apache Kafka e qual vantagem ele tem sobre SASL/PLAIN?",
+      "options": {
+        "A": "SASL/SCRAM usa tokens JWT para autenticação; SASL/PLAIN usa certificados X.509",
+        "B": "SASL/SCRAM armazena credenciais com hash salted no ZooKeeper/KRaft e nunca transmite a senha em texto claro; SASL/PLAIN transmite credenciais em texto claro (requer TLS obrigatório)",
+        "C": "SASL/SCRAM é exclusivo para autenticação inter-broker; SASL/PLAIN é usado apenas para clients externos",
+        "D": "SASL/SCRAM requer um servidor Kerberos externo; SASL/PLAIN não requer infraestrutura adicional"
+      },
+      "explanation": "SASL/SCRAM (Salted Challenge Response Authentication Mechanism) armazena as credenciais como hashes salted no ZooKeeper ou KRaft e usa um protocolo de desafio-resposta que nunca expõe a senha na rede. SASL/PLAIN transmite usuário e senha em texto claro, exigindo TLS para segurança. SCRAM permite gerenciamento dinâmico de credenciais via `kafka-configs.sh` sem reiniciar brokers, e suporta SCRAM-SHA-256 e SCRAM-SHA-512."
+    },
+    "en": {
+      "question": "How does SASL/SCRAM work in Apache Kafka and what advantage does it have over SASL/PLAIN?",
+      "options": {
+        "A": "SASL/SCRAM uses JWT tokens for authentication; SASL/PLAIN uses X.509 certificates",
+        "B": "SASL/SCRAM stores credentials as salted hashes in ZooKeeper/KRaft and never transmits the password in clear text; SASL/PLAIN transmits credentials in clear text (requires mandatory TLS)",
+        "C": "SASL/SCRAM is exclusive to inter-broker authentication; SASL/PLAIN is only used for external clients",
+        "D": "SASL/SCRAM requires an external Kerberos server; SASL/PLAIN requires no additional infrastructure"
+      },
+      "explanation": "SASL/SCRAM (Salted Challenge Response Authentication Mechanism) stores credentials as salted hashes in ZooKeeper or KRaft and uses a challenge-response protocol that never exposes the password on the network. SASL/PLAIN transmits username and password in clear text, requiring TLS for security. SCRAM allows dynamic credential management via `kafka-configs.sh` without restarting brokers, and supports SCRAM-SHA-256 and SCRAM-SHA-512."
+    }
+  },
+  {
+    "id": "q035",
+    "category": "Security",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "O que é `inter.broker.listener.name` e por que é importante configurá-lo corretamente?",
+      "options": {
+        "A": "Define o nome do listener usado pelos consumers para se conectar ao broker",
+        "B": "Especifica o protocolo de compressão usado na replicação entre brokers",
+        "C": "Define qual listener os brokers usam para se comunicar entre si (replicação, eleições), permitindo usar protocolos diferentes para tráfego interno e externo",
+        "D": "Configura o timeout de conexão entre brokers em ambientes de alta latência"
+      },
+      "explanation": "`inter.broker.listener.name` especifica o listener que os brokers usam para comunicação interna (replicação de partições, eleições de controller). Isso permite configurar listeners separados: por exemplo, `INTERNAL` com SASL/PLAINTEXT para tráfego entre brokers e `EXTERNAL` com SSL para clients externos. Configurar incorretamente pode impedir a replicação e causar partições under-replicated."
+    },
+    "en": {
+      "question": "What is `inter.broker.listener.name` and why is it important to configure it correctly?",
+      "options": {
+        "A": "Defines the listener name used by consumers to connect to the broker",
+        "B": "Specifies the compression protocol used in inter-broker replication",
+        "C": "Defines which listener brokers use to communicate with each other (replication, elections), allowing different protocols for internal and external traffic",
+        "D": "Configures the connection timeout between brokers in high-latency environments"
+      },
+      "explanation": "`inter.broker.listener.name` specifies the listener that brokers use for internal communication (partition replication, controller elections). This allows configuring separate listeners: for example, `INTERNAL` with SASL/PLAINTEXT for inter-broker traffic and `EXTERNAL` with SSL for external clients. Incorrect configuration can prevent replication and cause under-replicated partitions."
+    }
+  },
+  {
+    "id": "q036",
+    "category": "Producers",
+    "difficulty": "easy",
+    "correct": "D",
+    "pt": {
+      "question": "Qual codec de compressão é suportado nativamente pelo Apache Kafka para mensagens de producers?",
+      "options": {
+        "A": "Apenas gzip",
+        "B": "gzip e bzip2",
+        "C": "gzip, Snappy e zstd",
+        "D": "gzip, Snappy, LZ4 e zstd"
+      },
+      "explanation": "O Kafka suporta quatro codecs de compressão: `gzip` (melhor taxa de compressão, maior CPU), `snappy` (equilíbrio entre velocidade e compressão), `lz4` (mais rápido, menor compressão) e `zstd` (adicionado no Kafka 2.1, excelente equilíbrio). A compressão é configurada no producer via `compression.type` e aplicada por batch. O broker pode recomprimir se `compression.type` do tópico for diferente do producer."
+    },
+    "en": {
+      "question": "Which compression codecs are natively supported by Apache Kafka for producer messages?",
+      "options": {
+        "A": "gzip only",
+        "B": "gzip and bzip2",
+        "C": "gzip, Snappy, and zstd",
+        "D": "gzip, Snappy, LZ4, and zstd"
+      },
+      "explanation": "Kafka supports four compression codecs: `gzip` (best compression ratio, higher CPU), `snappy` (balance between speed and compression), `lz4` (fastest, lower compression), and `zstd` (added in Kafka 2.1, excellent balance). Compression is configured on the producer via `compression.type` and applied per batch. The broker may recompress if the topic's `compression.type` differs from the producer's."
+    }
+  },
+  {
+    "id": "q037",
+    "category": "Kafka Core Concepts",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "O que é o `__transaction_state` no Apache Kafka?",
+      "options": {
+        "A": "Um tópico interno compactado que armazena o estado das transações em andamento e concluídas, gerenciado pelo Transaction Coordinator",
+        "B": "Uma variável de estado no producer que rastreia mensagens não confirmadas",
+        "C": "O log de auditoria de todas as operações transacionais realizadas no cluster",
+        "D": "A configuração que define o timeout máximo de uma transação aberta"
+      },
+      "explanation": "`__transaction_state` é um tópico interno do Kafka (similar ao `__consumer_offsets`) que persiste o estado das transações. O Transaction Coordinator — um broker responsável por coordenar transações de um `transactional.id` específico — usa esse tópico para registrar o início, as partições envolvidas, o commit ou abort de cada transação. Isso garante durabilidade e recuperação em caso de falha do coordinator."
+    },
+    "en": {
+      "question": "What is `__transaction_state` in Apache Kafka?",
+      "options": {
+        "A": "An internal compacted topic that stores the state of ongoing and completed transactions, managed by the Transaction Coordinator",
+        "B": "A state variable in the producer that tracks unacknowledged messages",
+        "C": "The audit log of all transactional operations performed on the cluster",
+        "D": "The configuration that defines the maximum timeout for an open transaction"
+      },
+      "explanation": "`__transaction_state` is an internal Kafka topic (similar to `__consumer_offsets`) that persists transaction state. The Transaction Coordinator — a broker responsible for coordinating transactions for a specific `transactional.id` — uses this topic to record the start, involved partitions, and commit or abort of each transaction. This ensures durability and recovery in case of coordinator failure."
+    }
+  },
+  {
+    "id": "q038",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "O que acontece com as mensagens de uma partição quando `unclean.leader.election.enable=true` e o líder falha sem réplicas no ISR?",
+      "options": {
+        "A": "O Kafka aguarda indefinidamente até que uma réplica do ISR fique disponível, garantindo zero perda de dados",
+        "B": "Uma réplica fora do ISR pode ser eleita líder, potencialmente causando perda das mensagens que não foram replicadas",
+        "C": "O tópico é marcado como somente-leitura até que o líder original se recupere",
+        "D": "O Kafka redireciona automaticamente as escritas para uma partição espelho em outro cluster"
+      },
+      "explanation": "Com `unclean.leader.election.enable=true`, o Kafka permite eleger como líder uma réplica que não está no ISR (ou seja, está atrasada). Isso prioriza disponibilidade sobre consistência: o cluster continua aceitando escritas, mas mensagens que estavam apenas no líder original e não foram replicadas são perdidas. O padrão é `false` desde o Kafka 0.11, priorizando durabilidade."
+    },
+    "en": {
+      "question": "What happens to partition messages when `unclean.leader.election.enable=true` and the leader fails with no ISR replicas available?",
+      "options": {
+        "A": "Kafka waits indefinitely until an ISR replica becomes available, guaranteeing zero data loss",
+        "B": "An out-of-ISR replica can be elected leader, potentially causing loss of messages that were not replicated",
+        "C": "The topic is marked read-only until the original leader recovers",
+        "D": "Kafka automatically redirects writes to a mirror partition in another cluster"
+      },
+      "explanation": "With `unclean.leader.election.enable=true`, Kafka allows electing a replica not in the ISR (i.e., lagging behind) as leader. This prioritizes availability over consistency: the cluster continues accepting writes, but messages that were only on the original leader and not replicated are lost. The default is `false` since Kafka 0.11, prioritizing durability."
+    }
+  },
+  {
+    "id": "q039",
+    "category": "Kafka Connect",
+    "difficulty": "hard",
+    "correct": "C",
+    "pt": {
+      "question": "Qual é a diferença entre o modo standalone e o modo distribuído no Kafka Connect?",
+      "options": {
+        "A": "Standalone suporta múltiplos workers; distribuído suporta apenas um worker por conector",
+        "B": "Standalone armazena offsets no Kafka; distribuído armazena offsets em arquivo local",
+        "C": "Standalone executa em um único processo sem tolerância a falhas; distribuído escala horizontalmente com múltiplos workers, tolerância a falhas e armazenamento de estado no Kafka",
+        "D": "Standalone é recomendado para produção; distribuído é usado apenas para desenvolvimento"
+      },
+      "explanation": "No modo standalone, o Connect roda em um único processo, armazena offsets e configurações em arquivos locais — adequado para desenvolvimento e casos simples. No modo distribuído, múltiplos workers formam um grupo (usando o protocolo de consumer groups do Kafka), compartilham a carga de tarefas, armazenam offsets/configurações/status em tópicos Kafka internos (`connect-offsets`, `connect-configs`, `connect-status`) e toleram falhas de workers automaticamente."
+    },
+    "en": {
+      "question": "What is the difference between standalone and distributed mode in Kafka Connect?",
+      "options": {
+        "A": "Standalone supports multiple workers; distributed supports only one worker per connector",
+        "B": "Standalone stores offsets in Kafka; distributed stores offsets in a local file",
+        "C": "Standalone runs in a single process with no fault tolerance; distributed scales horizontally with multiple workers, fault tolerance, and state storage in Kafka",
+        "D": "Standalone is recommended for production; distributed is used only for development"
+      },
+      "explanation": "In standalone mode, Connect runs in a single process and stores offsets and configurations in local files — suitable for development and simple use cases. In distributed mode, multiple workers form a group (using Kafka's consumer group protocol), share task load, store offsets/configs/status in internal Kafka topics (`connect-offsets`, `connect-configs`, `connect-status`), and automatically tolerate worker failures."
+    }
+  },
+  {
+    "id": "q040",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "O que é `max.poll.interval.ms` e qual problema ele previne?",
+      "options": {
+        "A": "Define o tempo máximo entre chamadas a `poll()`; se excedido, o consumer é considerado travado e removido do grupo, iniciando rebalanceamento",
+        "B": "Define o número máximo de mensagens retornadas por chamada a `poll()`",
+        "C": "Define o intervalo máximo entre commits automáticos de offset",
+        "D": "Define o timeout de conexão TCP entre consumer e broker"
+      },
+      "explanation": "`max.poll.interval.ms` (padrão: 5 minutos) define o intervalo máximo entre chamadas consecutivas a `poll()`. Se o consumer demorar mais que esse tempo para processar um batch e chamar `poll()` novamente, o broker assume que ele travou e o remove do consumer group, iniciando um rebalanceamento. Isso previne que consumers lentos bloqueiem o progresso do grupo. Para processamentos longos, aumente `max.poll.interval.ms` ou reduza `max.poll.records`."
+    },
+    "en": {
+      "question": "What is `max.poll.interval.ms` and what problem does it prevent?",
+      "options": {
+        "A": "Defines the maximum time between `poll()` calls; if exceeded, the consumer is considered stuck and removed from the group, triggering a rebalance",
+        "B": "Defines the maximum number of messages returned per `poll()` call",
+        "C": "Defines the maximum interval between automatic offset commits",
+        "D": "Defines the TCP connection timeout between consumer and broker"
+      },
+      "explanation": "`max.poll.interval.ms` (default: 5 minutes) defines the maximum interval between consecutive `poll()` calls. If the consumer takes longer than this to process a batch and call `poll()` again, the broker assumes it is stuck and removes it from the consumer group, triggering a rebalance. This prevents slow consumers from blocking group progress. For long processing tasks, increase `max.poll.interval.ms` or reduce `max.poll.records`."
+    }
+  },
+  {
+    "id": "q041",
+    "category": "Kafka Core Concepts",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que é o `Group Coordinator` no Apache Kafka?",
+      "options": {
+        "A": "Um processo externo ao Kafka responsável por balancear a carga entre brokers",
+        "B": "O broker com menor carga que automaticamente assume a coordenação de todos os consumer groups",
+        "C": "Um componente do ZooKeeper que rastreia o estado dos consumer groups",
+        "D": "Um broker específico responsável por gerenciar o ciclo de vida de um consumer group: adesão, heartbeats, rebalanceamentos e commits de offset"
+      },
+      "explanation": "O Group Coordinator é um broker do cluster designado para gerenciar um consumer group específico. Ele recebe os heartbeats dos consumers, detecta falhas (timeout de sessão), coordena rebalanceamentos (usando o Group Leader — o primeiro consumer a entrar no grupo) e persiste os commits de offset no tópico `__consumer_offsets`. O coordinator é determinado pelo hash do `group.id` mapeado para uma partição do `__consumer_offsets`."
+    },
+    "en": {
+      "question": "What is the `Group Coordinator` in Apache Kafka?",
+      "options": {
+        "A": "An external process responsible for balancing load across brokers",
+        "B": "The broker with the lowest load that automatically takes over coordination of all consumer groups",
+        "C": "A ZooKeeper component that tracks consumer group state",
+        "D": "A specific broker responsible for managing the lifecycle of a consumer group: membership, heartbeats, rebalances, and offset commits"
+      },
+      "explanation": "The Group Coordinator is a cluster broker designated to manage a specific consumer group. It receives heartbeats from consumers, detects failures (session timeout), coordinates rebalances (using the Group Leader — the first consumer to join the group), and persists offset commits to the `__consumer_offsets` topic. The coordinator is determined by hashing the `group.id` to a partition of `__consumer_offsets`."
+    }
+  },
+  {
+    "id": "q042",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "easy",
+    "correct": "C",
+    "pt": {
+      "question": "Qual é o número máximo de consumers ativos em um consumer group que podem consumir de um tópico com 6 partições?",
+      "options": {
+        "A": "Ilimitado — qualquer número de consumers pode ser adicionado ao grupo",
+        "B": "3 consumers, pois cada consumer processa no máximo 2 partições",
+        "C": "6 consumers — um por partição; consumers adicionais ficarão ociosos sem partição atribuída",
+        "D": "12 consumers, pois o Kafka permite 2 consumers por partição para redundância"
+      },
+      "explanation": "No Kafka, cada partição é atribuída a no máximo um consumer dentro de um consumer group. Com 6 partições, no máximo 6 consumers podem trabalhar em paralelo. Se houver mais consumers que partições, os consumers excedentes ficam ociosos (sem partição atribuída) e só assumem trabalho se outro consumer sair do grupo. Para aumentar o paralelismo, é necessário aumentar o número de partições do tópico."
+    },
+    "en": {
+      "question": "What is the maximum number of active consumers in a consumer group that can consume from a topic with 6 partitions?",
+      "options": {
+        "A": "Unlimited — any number of consumers can be added to the group",
+        "B": "3 consumers, since each consumer processes at most 2 partitions",
+        "C": "6 consumers — one per partition; additional consumers will be idle with no assigned partition",
+        "D": "12 consumers, since Kafka allows 2 consumers per partition for redundancy"
+      },
+      "explanation": "In Kafka, each partition is assigned to at most one consumer within a consumer group. With 6 partitions, at most 6 consumers can work in parallel. If there are more consumers than partitions, the excess consumers remain idle (no partition assigned) and only take over work if another consumer leaves the group. To increase parallelism, the number of topic partitions must be increased."
+    }
+  },
+  {
+    "id": "q043",
+    "category": "Producers",
+    "difficulty": "medium",
+    "correct": "B",
+    "pt": {
+      "question": "O que é o `RecordAccumulator` no producer Kafka e qual sua relação com `batch.size` e `linger.ms`?",
+      "options": {
+        "A": "É o buffer do broker que acumula mensagens antes de gravá-las no disco",
+        "B": "É o buffer interno do producer que agrupa mensagens por partição em batches antes de enviá-las; `batch.size` define o tamanho máximo do batch e `linger.ms` define o tempo máximo de espera para completar o batch",
+        "C": "É o componente responsável por reordenar mensagens em caso de retentativas",
+        "D": "É o mecanismo de controle de fluxo que limita o número de requisições simultâneas ao broker"
+      },
+      "explanation": "O `RecordAccumulator` é o buffer interno do producer Java que agrupa mensagens destinadas à mesma partição em batches (ProducerBatch). Um batch é enviado quando atinge `batch.size` bytes OU quando `linger.ms` milissegundos se passam (o que ocorrer primeiro). Aumentar `linger.ms` (padrão: 0) permite acumular mais mensagens por batch, melhorando throughput e compressão ao custo de latência ligeiramente maior."
+    },
+    "en": {
+      "question": "What is the `RecordAccumulator` in the Kafka producer and how does it relate to `batch.size` and `linger.ms`?",
+      "options": {
+        "A": "It is the broker buffer that accumulates messages before writing them to disk",
+        "B": "It is the producer's internal buffer that groups messages per partition into batches before sending; `batch.size` defines the maximum batch size and `linger.ms` defines the maximum wait time to fill the batch",
+        "C": "It is the component responsible for reordering messages during retries",
+        "D": "It is the flow control mechanism that limits the number of simultaneous requests to the broker"
+      },
+      "explanation": "The `RecordAccumulator` is the Java producer's internal buffer that groups messages destined for the same partition into batches (ProducerBatch). A batch is sent when it reaches `batch.size` bytes OR when `linger.ms` milliseconds have passed (whichever comes first). Increasing `linger.ms` (default: 0) allows accumulating more messages per batch, improving throughput and compression at the cost of slightly higher latency."
+    }
+  },
+  {
+    "id": "q044",
+    "category": "Consumers & Consumer Groups",
+    "difficulty": "medium",
+    "correct": "D",
+    "pt": {
+      "question": "O que é `isolation.level` no consumer Kafka e quais são seus valores possíveis?",
+      "options": {
+        "A": "Define o nível de criptografia da conexão: `none`, `ssl` ou `sasl_ssl`",
+        "B": "Controla se o consumer pode ler de réplicas seguidoras além do líder: `read_leader` ou `read_follower`",
+        "C": "Define a política de rebalanceamento: `eager` ou `cooperative`",
+        "D": "Controla a visibilidade de mensagens transacionais: `read_uncommitted` (padrão, lê todas) ou `read_committed` (lê apenas mensagens de transações confirmadas)"
+      },
+      "explanation": "`isolation.level` controla quais mensagens o consumer vê em tópicos com producers transacionais. `read_uncommitted` (padrão) lê todas as mensagens, incluindo as de transações ainda abertas ou abortadas. `read_committed` lê apenas mensagens de transações confirmadas (committed) e mensagens não-transacionais, ignorando mensagens de transações abortadas. É essencial para implementar exactly-once semantics no lado do consumer."
+    },
+    "en": {
+      "question": "What is `isolation.level` in a Kafka consumer and what are its possible values?",
+      "options": {
+        "A": "Defines the connection encryption level: `none`, `ssl`, or `sasl_ssl`",
+        "B": "Controls whether the consumer can read from follower replicas in addition to the leader: `read_leader` or `read_follower`",
+        "C": "Defines the rebalance policy: `eager` or `cooperative`",
+        "D": "Controls transactional message visibility: `read_uncommitted` (default, reads all) or `read_committed` (reads only messages from committed transactions)"
+      },
+      "explanation": "`isolation.level` controls which messages the consumer sees in topics with transactional producers. `read_uncommitted` (default) reads all messages, including those from still-open or aborted transactions. `read_committed` reads only messages from committed transactions and non-transactional messages, ignoring messages from aborted transactions. It is essential for implementing exactly-once semantics on the consumer side."
+    }
+  },
+  {
+    "id": "q045",
+    "category": "Kafka Connect",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "Como o Kafka Connect gerencia o paralelismo dentro de um conector?",
+      "options": {
+        "A": "Através de Tasks — unidades de trabalho paralelas dentro de um conector; `tasks.max` define o número máximo de tasks que podem ser executadas em paralelo",
+        "B": "Através de Partitions — cada partição do tópico de destino é processada por uma thread separada",
+        "C": "Através de Workers — cada worker executa exatamente um conector de forma exclusiva",
+        "D": "Através de Pipelines — cada pipeline representa uma conexão independente com o sistema externo"
+      },
+      "explanation": "No Kafka Connect, um conector divide seu trabalho em Tasks — unidades de execução paralelas. `tasks.max` define o número máximo de tasks que o conector pode criar (o conector pode criar menos se a fonte de dados não suportar tanto paralelismo). As tasks são distribuídas entre os workers disponíveis no cluster Connect. Por exemplo, um conector JDBC com `tasks.max=4` pode ler de 4 tabelas em paralelo."
+    },
+    "en": {
+      "question": "How does Kafka Connect manage parallelism within a connector?",
+      "options": {
+        "A": "Through Tasks — parallel work units within a connector; `tasks.max` defines the maximum number of tasks that can run in parallel",
+        "B": "Through Partitions — each destination topic partition is processed by a separate thread",
+        "C": "Through Workers — each worker runs exactly one connector exclusively",
+        "D": "Through Pipelines — each pipeline represents an independent connection to the external system"
+      },
+      "explanation": "In Kafka Connect, a connector divides its work into Tasks — parallel execution units. `tasks.max` defines the maximum number of tasks the connector can create (the connector may create fewer if the data source does not support that level of parallelism). Tasks are distributed across available workers in the Connect cluster. For example, a JDBC connector with `tasks.max=4` can read from 4 tables in parallel."
+    }
+  },
+  {
+    "id": "q046",
+    "category": "Monitoring & Operations",
+    "difficulty": "hard",
+    "correct": "B",
+    "pt": {
+      "question": "O que é o `kafka-reassign-partitions.sh` e quando deve ser usado?",
+      "options": {
+        "A": "Ferramenta para aumentar o número de partições de um tópico existente",
+        "B": "Ferramenta para mover partições entre brokers, usada ao adicionar/remover brokers ou rebalancear carga de disco",
+        "C": "Ferramenta para alterar o fator de replicação de tópicos existentes sem downtime",
+        "D": "Ferramenta para sincronizar partições entre clusters Kafka em diferentes datacenters"
+      },
+      "explanation": "`kafka-reassign-partitions.sh` permite mover réplicas de partições entre brokers. É usado ao: adicionar novos brokers (o Kafka não redistribui automaticamente partições existentes), remover brokers do cluster, rebalancear carga de disco, ou alterar o fator de replicação. O processo gera um plano de reassignment em JSON, que é executado e pode ser monitorado com `--verify`. Durante a reassignment, o tráfego de replicação pode impactar a performance."
+    },
+    "en": {
+      "question": "What is `kafka-reassign-partitions.sh` and when should it be used?",
+      "options": {
+        "A": "A tool to increase the number of partitions of an existing topic",
+        "B": "A tool to move partitions between brokers, used when adding/removing brokers or rebalancing disk load",
+        "C": "A tool to change the replication factor of existing topics without downtime",
+        "D": "A tool to synchronize partitions between Kafka clusters in different datacenters"
+      },
+      "explanation": "`kafka-reassign-partitions.sh` allows moving partition replicas between brokers. It is used when: adding new brokers (Kafka does not automatically redistribute existing partitions), removing brokers from the cluster, rebalancing disk load, or changing the replication factor. The process generates a JSON reassignment plan, which is executed and can be monitored with `--verify`. During reassignment, replication traffic may impact performance."
+    }
+  },
+  {
+    "id": "q047",
+    "category": "Kafka Core Concepts",
+    "difficulty": "easy",
+    "correct": "C",
+    "pt": {
+      "question": "O que é um offset no Apache Kafka?",
+      "options": {
+        "A": "O identificador único de um broker dentro do cluster",
+        "B": "O número de réplicas de uma partição que estão sincronizadas com o líder",
+        "C": "Um número sequencial imutável que identifica unicamente cada mensagem dentro de uma partição",
+        "D": "O tempo de retenção configurado para um tópico específico"
+      },
+      "explanation": "O offset é um número inteiro sequencial (começando em 0) atribuído a cada mensagem dentro de uma partição específica. Ele é imutável e monotonicamente crescente — nunca é reutilizado. Consumers usam offsets para rastrear sua posição de leitura em cada partição. O offset é único apenas dentro de uma partição; a mesma mensagem em partições diferentes pode ter offsets iguais."
+    },
+    "en": {
+      "question": "What is an offset in Apache Kafka?",
+      "options": {
+        "A": "The unique identifier of a broker within the cluster",
+        "B": "The number of partition replicas that are synchronized with the leader",
+        "C": "An immutable sequential number that uniquely identifies each message within a partition",
+        "D": "The retention time configured for a specific topic"
+      },
+      "explanation": "An offset is a sequential integer (starting at 0) assigned to each message within a specific partition. It is immutable and monotonically increasing — never reused. Consumers use offsets to track their read position in each partition. An offset is unique only within a partition; the same message in different partitions may have equal offsets."
+    }
+  },
+  {
+    "id": "q048",
+    "category": "Topics, Partitions & Replication",
+    "difficulty": "hard",
+    "correct": "D",
+    "pt": {
+      "question": "O que é o `follower fetching` (ou `rack-aware replica fetching`) introduzido no Kafka 2.4?",
+      "options": {
+        "A": "Um mecanismo que permite ao producer enviar mensagens diretamente para réplicas seguidoras, reduzindo a carga no líder",
+        "B": "Uma estratégia de replicação que prioriza réplicas no mesmo rack que o líder",
+        "C": "Um protocolo que permite réplicas seguidoras buscar dados de outras seguidoras em vez do líder",
+        "D": "Um recurso que permite consumers ler de réplicas seguidoras no mesmo rack/zona de disponibilidade, reduzindo latência e custos de tráfego entre zonas"
+      },
+      "explanation": "Introduzido no Kafka 2.4 (KIP-392), o follower fetching permite que consumers leiam de réplicas seguidoras que estejam no mesmo rack ou zona de disponibilidade (AZ) que o consumer, em vez de sempre ler do líder. Isso reduz a latência de leitura, diminui o tráfego cross-AZ (e seus custos em cloud) e distribui a carga de leitura entre réplicas. Configurado via `client.rack` no consumer e `broker.rack` no broker."
+    },
+    "en": {
+      "question": "What is `follower fetching` (or rack-aware replica fetching) introduced in Kafka 2.4?",
+      "options": {
+        "A": "A mechanism that allows producers to send messages directly to follower replicas, reducing leader load",
+        "B": "A replication strategy that prioritizes replicas on the same rack as the leader",
+        "C": "A protocol that allows follower replicas to fetch data from other followers instead of the leader",
+        "D": "A feature that allows consumers to read from follower replicas in the same rack/availability zone, reducing latency and cross-zone traffic costs"
+      },
+      "explanation": "Introduced in Kafka 2.4 (KIP-392), follower fetching allows consumers to read from follower replicas in the same rack or availability zone (AZ) as the consumer, instead of always reading from the leader. This reduces read latency, decreases cross-AZ traffic (and its costs in cloud environments), and distributes read load across replicas. Configured via `client.rack` on the consumer and `broker.rack` on the broker."
+    }
+  },
+  {
+    "id": "q049",
+    "category": "Security",
+    "difficulty": "medium",
+    "correct": "A",
+    "pt": {
+      "question": "O que é mTLS (mutual TLS) no contexto do Apache Kafka e qual sua vantagem?",
+      "options": {
+        "A": "Autenticação bidirecional onde tanto o broker quanto o cliente apresentam certificados X.509, garantindo que ambos os lados da conexão sejam verificados",
+        "B": "Um protocolo que usa dois certificados TLS em paralelo para aumentar a velocidade de criptografia",
+        "C": "Uma configuração que exige TLS tanto para listeners internos quanto externos do broker",
+        "D": "Um mecanismo de rotação automática de certificados TLS sem downtime"
+      },
+      "explanation": "mTLS (mutual TLS ou two-way TLS) exige que tanto o servidor (broker) quanto o cliente (producer/consumer) apresentem e validem certificados X.509. No Kafka, é configurado com `ssl.client.auth=required` no broker. A vantagem é autenticação forte baseada em certificados sem necessidade de SASL — o `ssl.principal.mapping.rules` extrai o principal do DN do certificado do cliente para uso em ACLs. É amplamente usado em ambientes de alta segurança."
+    },
+    "en": {
+      "question": "What is mTLS (mutual TLS) in the context of Apache Kafka and what is its advantage?",
+      "options": {
+        "A": "Bidirectional authentication where both the broker and the client present X.509 certificates, ensuring both sides of the connection are verified",
+        "B": "A protocol that uses two TLS certificates in parallel to increase encryption speed",
+        "C": "A configuration that requires TLS for both internal and external broker listeners",
+        "D": "An automatic TLS certificate rotation mechanism without downtime"
+      },
+      "explanation": "mTLS (mutual TLS or two-way TLS) requires both the server (broker) and the client (producer/consumer) to present and validate X.509 certificates. In Kafka, it is configured with `ssl.client.auth=required` on the broker. The advantage is strong certificate-based authentication without needing SASL — `ssl.principal.mapping.rules` extracts the principal from the client certificate's DN for use in ACLs. It is widely used in high-security environments."
+    }
+  },
+  {
+    "id": "q050",
+    "category": "Monitoring & Operations",
+    "difficulty": "medium",
+    "correct": "C",
+    "pt": {
+      "question": "Qual é a finalidade do `kafka-configs.sh` e cite um exemplo de uso?",
+      "options": {
+        "A": "Criar e deletar tópicos no cluster Kafka",
+        "B": "Monitorar métricas JMX de brokers em tempo real",
+        "C": "Gerenciar configurações dinâmicas de brokers, tópicos, clientes e usuários sem necessidade de reinicialização",
+        "D": "Exportar a configuração completa do cluster para um arquivo de backup"
+      },
+      "explanation": "`kafka-configs.sh` permite alterar configurações dinamicamente (sem restart) para entidades como tópicos (`--entity-type topics`), brokers (`--entity-type brokers`), usuários e clientes. Exemplo: `kafka-configs.sh --bootstrap-server localhost:9092 --alter --entity-type topics --entity-name meu-topico --add-config retention.ms=86400000` altera a retenção do tópico para 1 dia. Também é usado para gerenciar credenciais SCRAM: `--add-config 'SCRAM-SHA-256=[password=senha]'`."
+    },
+    "en": {
+      "question": "What is the purpose of `kafka-configs.sh` and give an example of its use?",
+      "options": {
+        "A": "Create and delete topics in the Kafka cluster",
+        "B": "Monitor broker JMX metrics in real time",
+        "C": "Manage dynamic configurations for brokers, topics, clients, and users without requiring a restart",
+        "D": "Export the complete cluster configuration to a backup file"
+      },
+      "explanation": "`kafka-configs.sh` allows dynamically changing configurations (without restart) for entities such as topics (`--entity-type topics`), brokers (`--entity-type brokers`), users, and clients. Example: `kafka-configs.sh --bootstrap-server localhost:9092 --alter --entity-type topics --entity-name my-topic --add-config retention.ms=86400000` changes the topic retention to 1 day. It is also used to manage SCRAM credentials: `--add-config 'SCRAM-SHA-256=[password=secret]'`."
+    }
+  }
+]
